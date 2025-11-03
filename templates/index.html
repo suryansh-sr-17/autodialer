@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autodialer System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>
+                <span class="icon">📞</span>
+                Autodialer System
+            </h1>
+            <div class="test-mode-indicator" id="test-mode">
+                <span class="status-dot"></span>
+                Test Mode Active
+            </div>
+        </header>
+        
+        <!-- Status Message -->
+        <div id="status" class="status-message" role="alert" aria-live="polite"></div>
+        
+        <div class="main-grid">
+            <!-- Phone Number Management Panel -->
+            <section class="panel number-management" aria-labelledby="number-management-title">
+                <h2 id="number-management-title">
+                    <span class="panel-icon">📋</span>
+                    Phone Number Management
+                </h2>
+                
+                <div class="input-group">
+                    <label for="numbers-textarea" class="input-label">
+                        Copy-Paste Phone Numbers
+                        <span class="help-text">Enter numbers one per line or comma-separated</span>
+                    </label>
+                    <div class="textarea-container">
+                        <textarea 
+                            id="numbers-textarea" 
+                            class="numbers-input"
+                            placeholder="Enter phone numbers here...&#10;Example:&#10;+91 98765 43210&#10;+91 87654 32109"
+                            rows="6"
+                            aria-describedby="textarea-help"
+                        ></textarea>
+                        <div class="input-counter">
+                            <span id="number-count">0</span> numbers detected
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="uploadNumbers()" aria-describedby="textarea-help">
+                        <span class="btn-icon">➕</span>
+                        Add Numbers
+                    </button>
+                    <div id="textarea-help" class="sr-only">Enter phone numbers in Indian format starting with +91</div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="file-upload" class="input-label">
+                        Upload File
+                        <span class="help-text">Supports .txt and .csv files</span>
+                    </label>
+                    <div class="file-upload-container">
+                        <input type="file" id="file-upload" accept=".txt,.csv" class="file-input">
+                        <div class="file-upload-area" onclick="document.getElementById('file-upload').click()">
+                            <span class="upload-icon">📁</span>
+                            <span class="upload-text">Click to select file or drag & drop</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="uploadFile()">
+                        <span class="btn-icon">📤</span>
+                        Upload File
+                    </button>
+                </div>
+                
+                <div class="input-group">
+                    <label for="single-number" class="input-label">Add Single Number</label>
+                    <div class="single-number-container">
+                        <input 
+                            type="text" 
+                            id="single-number" 
+                            class="single-number-input"
+                            placeholder="+91 XXXXX XXXXX"
+                            pattern="^\+91[0-9\s-]{10,15}$"
+                        >
+                        <button class="btn btn-secondary" onclick="addSingleNumber()">
+                            <span class="btn-icon">➕</span>
+                            Add
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="current-numbers">
+                    <h3>Current Numbers (<span id="current-count">0</span>)</h3>
+                    <div id="numbers-list" class="numbers-list">
+                        <p class="empty-state">No numbers added yet</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- AI Command Center -->
+            <section class="panel ai-command" aria-labelledby="ai-command-title">
+                <h2 id="ai-command-title">
+                    <span class="panel-icon">🤖</span>
+                    AI Command Center
+                </h2>
+                
+                <div class="command-input-group">
+                    <label for="ai-command" class="input-label">
+                        Natural Language Commands
+                        <span class="help-text">Type commands in plain English</span>
+                    </label>
+                    <div class="command-container">
+                        <input 
+                            type="text" 
+                            id="ai-command" 
+                            class="command-input"
+                            placeholder="Try: 'call all numbers', 'add number +91XXXXXXXXXX', 'view call logs'"
+                            autocomplete="off"
+                        >
+                        <button class="btn btn-primary command-btn" onclick="processCommand()">
+                            <span class="btn-icon">🚀</span>
+                            Execute
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="quick-commands">
+                    <h3>Quick Actions</h3>
+                    <div class="quick-buttons">
+                        <button class="btn btn-success quick-btn" onclick="quickCommand('call all numbers')">
+                            <span class="btn-icon">📞</span>
+                            Call All Numbers
+                        </button>
+                        <button class="btn btn-info quick-btn" onclick="quickCommand('view call logs')">
+                            <span class="btn-icon">📊</span>
+                            View Call Logs
+                        </button>
+                        <button class="btn btn-warning quick-btn" onclick="quickCommand('stop calling')">
+                            <span class="btn-icon">⏹️</span>
+                            Stop Calling
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="example-commands">
+                    <h4>Example Commands:</h4>
+                    <ul class="command-examples">
+                        <li onclick="setCommand('call all numbers one by one')">call all numbers one by one</li>
+                        <li onclick="setCommand('call +91 98765 43210')">call +91 98765 43210</li>
+                        <li onclick="setCommand('add number +91 87654 32109')">add number +91 87654 32109</li>
+                        <li onclick="setCommand('remove number +91 98765 43210')">remove number +91 98765 43210</li>
+                        <li onclick="setCommand('view call log details')">view call log details</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Call Control Dashboard -->
+            <section class="panel call-control" aria-labelledby="call-control-title">
+                <h2 id="call-control-title">
+                    <span class="panel-icon">🎛️</span>
+                    Call Control Dashboard
+                </h2>
+                
+                <div class="control-buttons">
+                    <button 
+                        id="start-calling" 
+                        class="btn btn-large btn-success control-btn" 
+                        onclick="startCalling()"
+                        aria-describedby="start-help"
+                    >
+                        <span class="btn-icon">▶️</span>
+                        Start Calling
+                    </button>
+                    <button 
+                        id="stop-calling" 
+                        class="btn btn-large btn-danger control-btn" 
+                        onclick="stopCalling()" 
+                        disabled
+                        aria-describedby="stop-help"
+                    >
+                        <span class="btn-icon">⏹️</span>
+                        Stop Calling
+                    </button>
+                </div>
+                
+                <div id="start-help" class="sr-only">Start calling all numbers in the list sequentially</div>
+                <div id="stop-help" class="sr-only">Stop the current calling process</div>
+                
+                <div id="call-progress" class="call-progress" style="display: none;">
+                    <div class="progress-info">
+                        <span id="current-call">Preparing to call...</span>
+                        <span id="call-counter">0 / 0</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="progress-details">
+                        <span id="progress-percentage">0%</span>
+                        <span id="estimated-time">Estimating...</span>
+                    </div>
+                </div>
+                
+                <div class="call-status">
+                    <div class="status-indicator" id="system-status">
+                        <span class="status-dot ready"></span>
+                        <span class="status-text">System Ready</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- Statistics Overview -->
+        <section class="panel statistics" aria-labelledby="statistics-title">
+            <h2 id="statistics-title">
+                <span class="panel-icon">📈</span>
+                Call Statistics
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-icon">📞</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="total-calls">0</div>
+                        <div class="stat-label">Total Calls</div>
+                    </div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="successful-calls">0</div>
+                        <div class="stat-label">Successful</div>
+                    </div>
+                </div>
+                <div class="stat-card failed">
+                    <div class="stat-icon">❌</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="failed-calls">0</div>
+                        <div class="stat-label">Failed</div>
+                    </div>
+                </div>
+                <div class="stat-card rate">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="success-rate">0%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Call Logs Section -->
+        <section class="panel call-logs" aria-labelledby="call-logs-title">
+            <h2 id="call-logs-title">
+                <span class="panel-icon">📋</span>
+                Call Logs
+            </h2>
+            
+            <div class="logs-controls">
+                <div class="logs-actions">
+                    <button class="btn btn-primary" onclick="loadCallLogs()">
+                        <span class="btn-icon">🔄</span>
+                        Refresh Logs
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportLogs()">
+                        <span class="btn-icon">📥</span>
+                        Export
+                    </button>
+                    <button class="btn btn-danger" onclick="clearLogs()">
+                        <span class="btn-icon">🗑️</span>
+                        Clear Logs
+                    </button>
+                </div>
+                
+                <div class="logs-filters">
+                    <input 
+                        type="text" 
+                        id="log-search" 
+                        class="search-input"
+                        placeholder="Search logs..."
+                        onkeyup="filterLogs()"
+                    >
+                    <select id="status-filter" class="filter-select" onchange="filterLogs()">
+                        <option value="">All Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="failed">Failed</option>
+                        <option value="no-answer">No Answer</option>
+                        <option value="busy">Busy</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="call-logs-table" class="logs-table-container">
+                <div class="empty-state">
+                    <span class="empty-icon">📋</span>
+                    <p>No call logs available</p>
+                    <p class="empty-subtext">Start making calls to see logs here</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
