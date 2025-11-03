@@ -131,7 +131,7 @@ python run_dev.py
 
 <div align="center">
 
-[![Deploy with Vercel](https://vercel.com/button)]([https://vercel.com/new/clone?repository-url=https://github.com/suryansh-sr-17/autodialer](https://autodialer-1.vercel.app/))
+[![Deploy with Vercel](https://vercel.com/button)](https://autodialer-1.vercel.app/)
 </div>
 
 **Manual Deployment:**
