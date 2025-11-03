@@ -1,0 +1,54 @@
+{
+  "name": "Autodialer Application",
+  "description": "AI-powered autodialer system for bulk phone calling with natural language commands",
+  "repository": "https://github.com/suryansh-sr-17/autodialer",
+  "logo": "https://via.placeholder.com/128x128/1a1a1a/ffffff?text=📞",
+  "keywords": [
+    "autodialer",
+    "twilio",
+    "ai",
+    "gemini",
+    "flask",
+    "python",
+    "bulk-calling"
+  ],
+  "env": {
+    "TWILIO_ACCOUNT_SID": {
+      "description": "Your Twilio Account SID from https://console.twilio.com/",
+      "required": true
+    },
+    "TWILIO_AUTH_TOKEN": {
+      "description": "Your Twilio Auth Token from https://console.twilio.com/",
+      "required": true
+    },
+    "TWILIO_PHONE_NUMBER": {
+      "description": "Your Twilio Phone Number (e.g., +1234567890)",
+      "required": true
+    },
+    "GEMINI_API_KEY": {
+      "description": "Your Google Gemini API Key from https://makersuite.google.com/app/apikey",
+      "required": true
+    },
+    "TEST_MODE": {
+      "description": "Enable test mode (only 1800 numbers allowed)",
+      "value": "True",
+      "required": false
+    },
+    "MAX_NUMBERS": {
+      "description": "Maximum number of phone numbers to store",
+      "value": "100",
+      "required": false
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
