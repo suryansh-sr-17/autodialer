@@ -29,12 +29,18 @@
 
 ## Deployment Platforms
 
-### Vercel
+### Vercel (Recommended)
+
+**🚀 One-Click Deploy:**
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/suryansh-sr-17/autodialer)
+
+**📖 Detailed Guide:** See [VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md) for complete step-by-step instructions.
+
+**Quick CLI Deploy:**
 ```bash
 npm install -g vercel
 vercel
 ```
-Set environment variables in Vercel dashboard.
 
 ### Heroku
 ```bash
